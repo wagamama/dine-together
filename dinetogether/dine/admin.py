@@ -36,29 +36,29 @@ class UserChangeForm(forms.ModelForm):
 		model = MyUser
 
 	def clean_password(self):
-		return self.initial("password")
+		return self.initial["password"]
 
 class MyUserAdmin(UserAdmin):
 	form = UserChangeForm
 	add_form = UserCreationForm
 
 	list_display = ('email', 'fb_access_token', 'fb_user_id', 'is_fb', 'is_admin')
-	list_filter = ('is_admin')
+	list_filter = ('is_admin',)
 	fieldsets = (
 		(None, {'fields': ('email', 'password')}),
-		('Facebook info', {'fields': ('fb_access_token')}),
-		('Permissions', {'fields': ('is_admin')}),
-		('Important dates', {'fields': ('last_login')}),
+		('Facebook info', {'fields': ('fb_access_token',)}),
+		('Permissions', {'fields': ('is_admin',)}),
+		('Important dates', {'fields': ('last_login',)}),
 	)
 
 	add_fieldsets = (
 		(None, {
-			'classes': ('wide'),
-			'fieldd': ('email', 'fb_access_token', 'password1', 'password2')}
+			'classes': ('wide',),
+			'fields': ('email', 'fb_access_token', 'password1', 'password2')}
 		)
 	)
-	search_field = ('email')
-	ordering = ('email')
+	search_field = ('email',)
+	ordering = ('email',)
 	filter_horizontal = ()
 
 admin.site.register(MyUser, MyUserAdmin)
