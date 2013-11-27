@@ -1,0 +1,62 @@
+{% extends "dine/base.html" %}
+{% block title %}dineTogether|home{% endblock title %}
+{% block context %}
+
+<div class="jumbotron">
+	<div class="container">
+		<h1>Let's have a party!</h1>
+		<p>Vote restaurants with your friends, <br/>and <br/>begin the party!</p>
+		{% if not user.is_authenticated %}
+		<p><a class="btn btn-primary btn-lg" href="/dine/register" role="button">Sign up today</a></p>
+		{% else %}
+		<p><a class="btn btn-primary btn-lg" href="/dine/create_party" role="button">Create party now</a></p>
+		{% endif %}
+	</div>
+</div>
+
+{% if user.is_authenticated %}
+	{% if host_parties %}
+	<div class="container">
+		<h1><span class="label label-info">Hosted</span></h1>
+    	<!-- Example row of columns -->
+    	<div class="row">
+    		{% for party in host_parties %}
+	    		<div class="col-md-4">
+          			<h2>{{ party.name }}</h2>
+          			{% if party.is_alive %}
+          				<h4><span class="label label-warning">{{ party.due_date.date }}</span></h4>
+          			{% else %}
+          				<h4><span class="label label-default">Finished</span></h4>
+          			{% endif %}
+          			<p>{{ party.description }}</p>
+          			<p><a class="btn btn-default" href="/dine/detail/p/{{ party.id }}/" role="button">View details &raquo;</a></p>
+        		</div>
+	    	{% endfor %}
+    	</div>
+    </div>
+	{% endif %}
+	<hr>
+	<hr>
+	{% if guest_parties %}
+	<div class="container">
+		<h1><span class="label label-info">Joined</span></h1>
+    	<!-- Example row of columns -->
+    	<div class="row">
+    		{% for party in guest_parties %}
+	    		<div class="col-md-4">
+          			<h2>{{ party.name }}</h2>
+          			{% if party.is_alive %}
+          				<h4><span class="label label-warning">{{ party.due_date.date }}</span></h4>
+          			{% else %}
+          				<h4><span class="label label-default">Finished</span></h4>
+          			{% endif %}
+          			<p>{{ party.description }}</p>
+          			<p><a class="btn btn-default" href="/dine/detail/p/{{ party.id }}/" role="button">View details &raquo;</a></p>
+        		</div>
+	    	{% endfor %}
+    	</div>
+    </div>
+	{% endif %}	
+{% endif %}
+
+{% endblock context %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 from django.contrib.auth.models import (
@@ -60,3 +61,56 @@ class MyUser(AbstractBaseUser):
 	def is_staff(self):
 		"Is the user a member of staff?"
 		return self.is_admin
+
+class Party(models.Model):
+	user = models.ForeignKey(MyUser)
+	name = models.CharField(max_length=20)
+	description = models.CharField(max_length=200)
+	create_date = models.DateTimeField('create date')
+	due_date = models.DateTimeField('due date')
+	host_voted = models.BooleanField(default=False)
+	
+	def __unicode__(self):
+		return self.name
+	
+	def is_alive(self):
+		return self.due_date >= timezone.now()
+	is_alive.boolean = True
+
+class PartyComment(models.Model):
+	party = models.ForeignKey(Party)
+	text = models.CharField(max_length=200)
+
+	def __unicode__(self):
+		return self.text
+
+class Restaurant(models.Model):
+	party = models.ForeignKey(Party)
+	name = models.CharField(max_length=20)
+	description = models.CharField(max_length=200, blank=True)
+	address = models.CharField(max_length=80, blank=True)
+	map_url = models.URLField(null=True, blank=True)
+	url = models.URLField(null=True, blank=True)
+	votes = models.IntegerField(default=0)
+	rates = models.DecimalField(default=0, max_digits=3, decimal_places=2)
+	
+	def __unicode__(self):
+		return self.name
+
+class RestaurantComment(models.Model):
+	restaurant = models.ForeignKey(Restaurant)
+	rates = models.PositiveSmallIntegerField(default=0)
+	text = models.CharField(max_length=200)
+
+	def __unicode__(self):
+		return self.text
+
+class UserRestaurant(models.Model):
+	user = models.ForeignKey(MyUser)
+	restaurant = models.ForeignKey(Restaurant)
+	rated = models.BooleanField(default=False)
+
+class UserParty(models.Model):
+	user = models.ForeignKey(MyUser)
+	party = models.ForeignKey(Party)
+	voted = models.BooleanField(default=False)

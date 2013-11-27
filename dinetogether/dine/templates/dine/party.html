@@ -1,0 +1,35 @@
+{% extends "dine/base.html" %}
+{% block title %}dineTogether|party{% endblock title %}
+{% block context %}
+
+{% if user.is_authenticated %}
+	{% if party %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>{{ party.name }}</h1>
+			<p>{{ party.description }}</p>
+			{% if role and role == 'host' %}
+			<p><a class="btn btn-primary btn-lg" href="#" role="button">Add user</a></p>
+			<p><a class="btn btn-primary btn-lg" href="#" role="button">Add restaurant</a></p>
+			{% endif %}
+		</div>
+	</div>
+	{% endif %}
+{% endif %}
+
+<div class="container">
+	<!-- Example row of columns -->
+	<div class="row">
+		{% for restaurant in restaurants %}
+			{% if user.is_authenticated %}
+			{% endif %}
+    		<div class="col-md-4">
+      			<h2>{{ party.name }}</h2>
+      			<p>{{ party.description }} </p>
+      			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    		</div>
+    {% endfor %}
+	</div>
+</div>
+
+{% endblock context %}

@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from dine.models import MyUser
+from dine.models import MyUser, Restaurant, Party, UserParty, PartyComment, UserRestaurant, RestaurantComment
 
 class UserCreationForm(forms.ModelForm):
 	"""docstring for UserCreationForm"""
@@ -61,5 +61,32 @@ class MyUserAdmin(UserAdmin):
 	ordering = ('email',)
 	filter_horizontal = ()
 
+class RestaurantInline(admin.StackedInline):
+	model = Restaurant
+
+class PartyAdmin(admin.ModelAdmin):
+	fieldsets = [
+		(None, {'fields': ['user', 'name', 'description']}),
+		('Date information', {'fields': ['create_date', 'due_date']})
+	]
+	inlines = [RestaurantInline]
+	list_display = ('name', 'create_date', 'due_date', 'is_alive')
+
+class UserPartyAdmin(admin.ModelAdmin):
+	filedsets = [
+		(None, {'fields': ['user', 'party', 'voted']}),
+	]
+
+class UserRestaurantAdmin(admin.ModelAdmin):
+	filedsets = [
+		(None, {'fields': ['user', 'restaurant', 'rated']}),
+	]
+
 admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(Party, PartyAdmin)
+admin.site.register(PartyComment)
+admin.site.register(Restaurant)
+admin.site.register(RestaurantComment)
+admin.site.register(UserParty, UserPartyAdmin)
+admin.site.register(UserRestaurant, UserRestaurantAdmin)
 admin.site.unregister(Group)
