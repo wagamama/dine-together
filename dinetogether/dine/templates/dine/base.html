@@ -14,8 +14,12 @@
 	<link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="{{ STATIC_URL }}css/bootstrap-theme.css" rel="stylesheet" type="text/css">
 	<link href="{{ STATIC_URL }}css/form.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}css/jumbotron.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
 	<link href="{{ STATIC_URL }}css/gh-fork-ribbon.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -43,12 +47,17 @@
                 </form>
             </div><!--/.navbar-collapse -->
             {% else %}
-            <div class="navbar-header navbar-right">
-                <a class="navbar-brand" href="/dine/logout">Sign out</a>
-            </div>
-            <div class="navbar-header navbar-right">
-                <a class="navbar-brand" href="#">{{ user.email }}</a>
-            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.email }}<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/dine/create_party">Create party</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/dine/logout">Sign out</a></li>
+                </ul>
+            </div><!--/.navbar-collapse -->
             {% endif %}
         </div>
     </div>
@@ -59,12 +68,7 @@
 	    </div>
 	</div>
 	<!-- RIGHT BOTTOM RIBBON: END COPYING HERE -->
-	<!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+    
     {% block context %}
     {% endblock context %}
 </body>

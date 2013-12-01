@@ -68,7 +68,6 @@ class Party(models.Model):
 	description = models.CharField(max_length=200)
 	create_date = models.DateTimeField('create date')
 	due_date = models.DateTimeField('due date')
-	host_voted = models.BooleanField(default=False)
 	
 	def __unicode__(self):
 		return self.name
@@ -79,10 +78,16 @@ class Party(models.Model):
 
 class PartyComment(models.Model):
 	party = models.ForeignKey(Party)
+	user = models.CharField(max_length=200)
 	text = models.CharField(max_length=200)
 
 	def __unicode__(self):
 		return self.text
+
+class Schedule(models.Model):
+	party = models.ForeignKey(Party)
+	data = models.DateTimeField('date')
+	votes = models.IntegerField(default=0)
 
 class Restaurant(models.Model):
 	party = models.ForeignKey(Party)
@@ -99,18 +104,16 @@ class Restaurant(models.Model):
 
 class RestaurantComment(models.Model):
 	restaurant = models.ForeignKey(Restaurant)
+	user = models.CharField(max_length=200)
 	rates = models.PositiveSmallIntegerField(default=0)
 	text = models.CharField(max_length=200)
 
 	def __unicode__(self):
 		return self.text
 
-class UserRestaurant(models.Model):
-	user = models.ForeignKey(MyUser)
-	restaurant = models.ForeignKey(Restaurant)
-	rated = models.BooleanField(default=False)
-
 class UserParty(models.Model):
 	user = models.ForeignKey(MyUser)
 	party = models.ForeignKey(Party)
-	voted = models.BooleanField(default=False)
+	schedule_voted = models.BooleanField(default=False)
+	restaurant_voted = models.BooleanField(default=False)
+	restaurant_rated = models.BooleanField(default=False)

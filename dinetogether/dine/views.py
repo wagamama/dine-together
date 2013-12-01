@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout, get_user, get_user_model
-from dine.models import Party, Restaurant, MyUser, UserParty, PartyComment, UserRestaurant, RestaurantComment
+from dine.models import Party, Restaurant, MyUser, UserParty, PartyComment, Schedule, RestaurantComment
 
 class RegisterForm(forms.Form):
 	email = forms.EmailField(max_length=30)
@@ -19,32 +19,17 @@ class CreatePartyForm(forms.Form):
 	due_date = forms.DateTimeField(label='due date', input_formats=['%Y-%m-%d'])
 
 def home(request):
-	alive = []
-	not_alive = []
-	host_parties = []
-	guest_parties = []
 	user = get_user(request)
-	for p in Party.objects.filter(user=user.id).order_by('due_date'):
-		if p.is_alive():
-			alive.append(p)
-		else:
-			not_alive.append(p)
-	host_parties = alive + not_alive
 	alive = []
 	not_alive = []
-	ups = UserParty.objects.filter(user=user.id)
-	parties = []
-	if ups:
-		for up in ups:
-			parties.append(Party.objects.get(id=up.party.id))
-	sorted(parties, key=lambda party: party.due_date)
+	parties = Party.objects.filter(userparty__user=user.id).order_by('due_date')
 	for p in parties:
 		if p.is_alive():
 			alive.append(p)
 		else:
 			not_alive.append(p)
-	guest_parties = alive + not_alive
-	return render_to_response('dine/index.html', {'host_parties': host_parties, 'guest_parties': guest_parties}, context_instance=RequestContext(request))
+	parties = alive + not_alive
+	return render_to_response('dine/index.html', {'parties': parties}, context_instance=RequestContext(request))
 
 def register(request):
 	error_msg = False
@@ -85,7 +70,7 @@ def login_view(request):
 				print "login success"
 				return HttpResponseRedirect('/')
 			else:
-				return HttpResponse('1')
+				return HttpResponseRedirect('/')
 				# Return a 'disabled account' error message
 		else:
 			return HttpResponseRedirect('/')
@@ -96,6 +81,19 @@ def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
 
+def add_user(request, party_id):
+	user = get_user(request)
+	party = Party.objects.get(pk=party_id)
+	if request.method == 'POST':
+		email = request.POST.get("join_user")
+		join_user = MyUser.objects.filter(email=email)
+		if join_user:
+			up = UserParty.objects.filter(user=join_user[0].id, party=party_id)
+			if not up:
+				up = UserParty(user=join_user[0], party=party)
+				up.save()
+	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
+
 def create_party_view(request):
 	error_msg = False
 	user = get_user(request)
@@ -105,9 +103,11 @@ def create_party_view(request):
 			name = request.POST.get("name")
 			description = request.POST.get("description")
 			due_date = request.POST.get("due_date")
-			p = user.party_set.create(name=name, description=description, create_date=timezone.now(), due_date=due_date)
-			p.save()
-			return HttpResponseRedirect('/dine/detail/p/%s/' % p.id)
+			party = user.party_set.create(name=name, description=description, create_date=timezone.now(), due_date=due_date)
+			party.save()
+			up = UserParty(user=user, party=party)
+			up.save()
+			return HttpResponseRedirect('/dine/detail/p/%s/' % party.id)
 		else:
 			print "invalided"
 			print form.errors
@@ -119,16 +119,17 @@ def create_restaurant_view(request):
 
 def party_detail(request, party_id):
 	user = get_user(request)
+	owner = False
 	party = Party.objects.get(pk=party_id)
+	users = MyUser.objects.filter(userparty__party=party_id)
 	restaurants = party.restaurant_set.all()
+
 	if party.user.id == user.id:
-		return render_to_response('dine/party.html', {'role': 'host', 'party': party, 'restaurants':restaurants}, context_instance=RequestContext(request))
-	else:
-		ups = UserParty.objects.filter(user=user.id)
-		if ups and int(party_id)== ups[0].party.id:
-			return render_to_response('dine/party.html', {'role': 'guest', 'party': party, 'restaurants':restaurants}, context_instance=RequestContext(request))
-		else:
-			return render_to_response('dine/party.html', {}, context_instance=RequestContext(request))
+		owner = True
+	elif not users.filter(id=user.id).exists():
+		return HttpResponseRedirect('/')
+	
+	return render_to_response('dine/party.html', {'owner': owner, 'party': party,'users': users, 'restaurants':restaurants}, context_instance=RequestContext(request))
 
 def restaurant_detail(request, restaurant_id):
 	restaurant = Restaurant.objects.get(pk=restaurant_id)

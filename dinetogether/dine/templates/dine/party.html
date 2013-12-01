@@ -7,10 +7,29 @@
 	<div class="jumbotron">
 		<div class="container">
 			<h1>{{ party.name }}</h1>
-			<p>{{ party.description }}</p>
-			{% if role and role == 'host' %}
-			<p><a class="btn btn-primary btn-lg" href="#" role="button">Add user</a></p>
-			<p><a class="btn btn-primary btn-lg" href="#" role="button">Add restaurant</a></p>
+			<p><span class="label label-info">When</span> {{ party.due_date.date }}</p>
+			<p><span class="label label-info">What</span> {{ party.description }}</p>
+			<p>
+			<span class="label label-info">Who</span>
+			{% for user in users %}
+			 	 <span class="label label-default">{{ user.email }}</span>
+			{% endfor %}
+			</p>
+			{% if owner and party.is_alive %}
+			<form class="navbar-form" method="post" action="add_user">
+				{% csrf_token %}
+            	<div class="form-group">
+            		<input type="text" name="join_user" placeholder="User email" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Add user</button>
+            </form>
+			<p>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Add schedule</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Add restaurant</a>
+			</P>
+			{% elif not party.is_alive %}
+				<p><span class="label label-info">Party date</span></p>
+				<p><span class="label label-info">Party place</span></p>
 			{% endif %}
 		</div>
 	</div>

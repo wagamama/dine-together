@@ -10,7 +10,6 @@ body {
   margin: 0 auto;
 }
 .form-signin .form-signin-heading,
-.form-create .form-create-heading,
 .form-signin .checkbox {
   margin-bottom: 10px;
 }
@@ -38,9 +37,4 @@ body {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-}
-.form-create {
-  max-width: 500px;
-  padding: 15px;
-  margin: 0 auto;
 }

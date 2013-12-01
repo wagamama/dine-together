@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from dine.models import MyUser, Restaurant, Party, UserParty, PartyComment, UserRestaurant, RestaurantComment
+from dine.models import MyUser, Restaurant, Party, UserParty, PartyComment, Schedule, RestaurantComment
 
 class UserCreationForm(forms.ModelForm):
 	"""docstring for UserCreationForm"""
@@ -77,16 +77,11 @@ class UserPartyAdmin(admin.ModelAdmin):
 		(None, {'fields': ['user', 'party', 'voted']}),
 	]
 
-class UserRestaurantAdmin(admin.ModelAdmin):
-	filedsets = [
-		(None, {'fields': ['user', 'restaurant', 'rated']}),
-	]
-
 admin.site.register(MyUser, MyUserAdmin)
 admin.site.register(Party, PartyAdmin)
 admin.site.register(PartyComment)
 admin.site.register(Restaurant)
 admin.site.register(RestaurantComment)
 admin.site.register(UserParty, UserPartyAdmin)
-admin.site.register(UserRestaurant, UserRestaurantAdmin)
+admin.site.register(Schedule)
 admin.site.unregister(Group)
