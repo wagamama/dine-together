@@ -2,9 +2,9 @@
 {% block title %}dineTogether|create-party{% endblock title %}
 {% block context %}
 <div class="container">
-    <form class="form-create" method="post" action="/dine/create_party_view">
+    <form class="form-signin" method="post" action="/dine/create_party_view">
         {% csrf_token %}
-        <h2 class="form-create-heading">Party info</h2>
+        <h2 class="form-signin-heading">Party info</h2>
         <input type="text" name="name" class="form-control" placeholder="Name" required>
         <input type="text" name="due_date" class="form-control" placeholder="Due date" id="datetimepicker" data-format="yyyy-MM-dd" required>
         <textarea type="text" name="description" class="form-control" placeholder="Description" rows="3" required></textarea>

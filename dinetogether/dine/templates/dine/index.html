@@ -4,38 +4,40 @@
 
 {% if not user.is_authenticated %}
     <div class="jumbotron">
-    	<div class="container">
-    		<h1>Let's have a party!</h1>
-    		<p>Vote restaurants with your friends, <br/>and <br/>begin the party!</p>
-    		<p><a class="btn btn-primary btn-lg" href="/dine/register" role="button">Sign up today</a></p>
-    	</div>
-    </div>
-{% elif not parties %}
-    <div class="jumbotron">
-      <div class="container">
-        <h1>Let's have a party!</h1>
-        <p>Vote restaurants with your friends, <br/>and <br/>begin the party!</p>
-        <p><a class="btn btn-primary btn-lg" href="/dine/create_party" role="button">Create party now</a></p>
-      </div>
+      	<div class="container">
+        		<h1>Let's have a party!</h1>
+        		<p>Vote restaurants with your friends, <br/>and <br/>begin the party!</p>
+        		<p><a class="btn btn-primary btn-lg" href="/dine/register" role="button">Sign up today</a></p>
+      	</div>
     </div>
 {% else %}
-	<div class="container">
-		<h1><span class="label label-danger">Party list</span></h1>
-    	<!-- Example row of columns -->
-    	<div class="row">
-    		{% for party in parties %}
-	    		<div class="col-md-4">
-          			<h2>{{ party.name }}</h2>
-          			{% if party.is_alive %}
-          				<h4><span class="label label-danger">{{ party.due_date.date }}</span></h4>
-          			{% else %}
-          				<h4><span class="label label-default">Finished</span></h4>
-          			{% endif %}
-          			<p>{{ party.description }}</p>
-          			<p><a class="btn btn-default" href="/dine/detail/p/{{ party.id }}/" role="button">View details &raquo;</a></p>
-        		</div>
-	    	{% endfor %}
-    	</div>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Let's have a party!</h1>
+            <p>Vote restaurants with your friends, <br/>and <br/>begin the party!</p>
+            <p><a class="btn btn-primary btn-lg" href="/dine/create_party" role="button">Create party now</a></p>
+        </div>
+    </div>
+  	<div class="container">
+      	<!-- Example row of columns -->
+      	<div class="row">
+        		{% for party in parties %}
+      	    		<div class="col-md-4">
+              			<h2>{{ party.name }}</h2>
+              			{% if party.is_alive %}
+              				<p><span class="label label-danger">{{ party.due_date.date }}</span></p>
+              			{% else %}
+              				<p><span class="label label-default">Finished</span></p>
+              			{% endif %}
+              			<p>{{ party.description }}</p>
+              			<p><a class="btn btn-default" href="/dine/detail/p/{{ party.id }}/" role="button">View details &raquo;</a></p>
+              	</div>
+    	    	{% endfor %}
+      	</div>
+        <hr>
+        <footer>
+          <p>&copy; Company 2013</p>
+        </footer>
     </div>
 {% endif %}
 
