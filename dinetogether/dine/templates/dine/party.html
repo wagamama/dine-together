@@ -23,32 +23,67 @@
                 </div>
                 <button type="submit" class="btn btn-success">Add user</button>
             </form>
-			<p>
-				<a class="btn btn-primary btn-lg" href="#" role="button">Add schedule</a>
-				<a class="btn btn-primary btn-lg" href="#" role="button">Add restaurant</a>
-			</P>
 			{% elif not party.is_alive %}
 				<p><span class="label label-info">Party date</span></p>
 				<p><span class="label label-info">Party place</span></p>
 			{% endif %}
 		</div>
 	</div>
+
+	<div class="container">
+		<h3><span class="label label-info">Schedule</span></h3>
+		<!-- Example row of columns -->
+		<div class="row">
+			{% for schedule in schedules %}
+				{% if user.is_authenticated %}
+				{% endif %}
+	    		<div class="col-md-2">
+	      			<p>{{ schedule.date.date }}</p>
+	      			<p id="weekday">{{ schedule.date.weekday }}</p>
+	      			<script type="text/javascript">
+	      				$(function() {
+				            $('#weekday').replaceWith(function () {
+				                return "<p>" + ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][$(this).text()] + "</p>"
+				            })
+				        })
+	      			</script>
+	    		</div>
+	    {% endfor %}
+		</div>
+		<div class="container">
+			{% if owner and party.is_alive %}
+			<form class="navbar-form" method="post" action="add_schedule">
+				{% csrf_token %}
+				<div class="form-group">
+					<input type="text" id="datetimepicker" name="schedule_date" placeholder="Party date" class="form-control" data-format="yyyy-MM-dd">
+				</div>
+			 	<button type="submit" class="btn btn-success">Add</button>
+			 </form>
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="container">
+		<h3><span class="label label-info">Restaurant</span>
+			{% if owner and party.is_alive %}
+			 <a class="btn btn-success" href="add_restaurant" role="button">Add</a>
+			{% endif %}
+		</h3>
+		<!-- Example row of columns -->
+		<div class="row">
+			{% for restaurant in restaurants %}
+				{% if user.is_authenticated %}
+				{% endif %}
+	    		<div class="col-md-4">
+	      			<h2>{{ restaurant.name }}</h2>
+	      			<p>{{ restaurant.description }} </p>
+	      			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+	    		</div>
+	    {% endfor %}
+		</div>
+	</div>
+
 	{% endif %}
 {% endif %}
-
-<div class="container">
-	<!-- Example row of columns -->
-	<div class="row">
-		{% for restaurant in restaurants %}
-			{% if user.is_authenticated %}
-			{% endif %}
-    		<div class="col-md-4">
-      			<h2>{{ party.name }}</h2>
-      			<p>{{ party.description }} </p>
-      			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-    		</div>
-    {% endfor %}
-	</div>
-</div>
 
 {% endblock context %}

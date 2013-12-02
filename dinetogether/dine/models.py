@@ -86,7 +86,7 @@ class PartyComment(models.Model):
 
 class Schedule(models.Model):
 	party = models.ForeignKey(Party)
-	data = models.DateTimeField('date')
+	date = models.DateTimeField('date')
 	votes = models.IntegerField(default=0)
 
 class Restaurant(models.Model):

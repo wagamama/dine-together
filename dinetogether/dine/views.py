@@ -83,16 +83,35 @@ def logout_view(request):
 
 def add_user(request, party_id):
 	user = get_user(request)
-	party = Party.objects.get(pk=party_id)
-	if request.method == 'POST':
-		email = request.POST.get("join_user")
-		join_user = MyUser.objects.filter(email=email)
-		if join_user:
-			up = UserParty.objects.filter(user=join_user[0].id, party=party_id)
-			if not up:
-				up = UserParty(user=join_user[0], party=party)
-				up.save()
+	party = Party.objects.filter(id=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
+	email = request.POST.get("join_user")
+	join_user = MyUser.objects.filter(email=email)
+	if join_user:
+		up = UserParty.objects.filter(user=join_user[0].id, party=party_id)
+		if not up:
+			up = UserParty(user=join_user[0], party=party)
+			up.save()
 	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
+
+def add_schedule(request, party_id):
+	user = get_user(request)
+	party = Party.objects.filter(id=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
+	date = request.POST.get("schedule_date")
+	if date:
+		schedule = Schedule.objects.filter(party=party_id, date=date)
+		if not schedule:
+			schedule = Schedule(party=party, date=date)
+			schedule.save()
+	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
+
+def add_restaurant(request, party_id):
+	return HttpResponse("add_restaurant")
 
 def create_party_view(request):
 	error_msg = False
@@ -114,14 +133,15 @@ def create_party_view(request):
 			error_msg = form.errors
 	return render_to_response('dine/create-party.html', {'error_msg': error_msg}, context_instance=RequestContext(request))
 
-def create_restaurant_view(request):
-	return HttpResponse("create_restaurant_view")
-
 def party_detail(request, party_id):
 	user = get_user(request)
 	owner = False
-	party = Party.objects.get(pk=party_id)
+	party = Party.objects.filter(pk=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
 	users = MyUser.objects.filter(userparty__party=party_id)
+	schedules = party.schedule_set.all().order_by('date')
 	restaurants = party.restaurant_set.all()
 
 	if party.user.id == user.id:
@@ -129,7 +149,7 @@ def party_detail(request, party_id):
 	elif not users.filter(id=user.id).exists():
 		return HttpResponseRedirect('/')
 	
-	return render_to_response('dine/party.html', {'owner': owner, 'party': party,'users': users, 'restaurants':restaurants}, context_instance=RequestContext(request))
+	return render_to_response('dine/party.html', {'owner': owner, 'party': party,'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
 
 def restaurant_detail(request, restaurant_id):
 	restaurant = Restaurant.objects.get(pk=restaurant_id)

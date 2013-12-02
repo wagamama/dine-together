@@ -4,17 +4,10 @@
 <div class="container">
     <form class="form-signin" method="post" action="/dine/create_party_view">
         {% csrf_token %}
-        <h2 class="form-signin-heading">Party info</h2>
+        <h2 class="form-signin-heading">Edit party info</h2>
         <input type="text" name="name" class="form-control" placeholder="Name" required>
         <input type="text" name="due_date" class="form-control" placeholder="Due date" id="datetimepicker" data-format="yyyy-MM-dd" required>
         <textarea type="text" name="description" class="form-control" placeholder="Description" rows="3" required></textarea>
-        <script type="text/javascript">
-    		$(function() {
-    			$('#datetimepicker').datetimepicker({
-      				pickTime: false
-      			});
-    		});
-    	</script>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Done</button>
     </form>
 </div> <!-- /container -->

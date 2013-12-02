@@ -11,9 +11,10 @@ urlpatterns = patterns('',
 	url(r'^login', views.login_view),
 	url(r'^logout', views.logout_view),
 	url(r'^create_party', views.create_party_view),
-	url(r'^create_restaurant', views.create_restaurant_view),
 	url(r'^detail/p/(?P<party_id>\d+)/$', views.party_detail),
 	url(r'^detail/p/(?P<party_id>\d+)/add_user', views.add_user),
+	url(r'^detail/p/(?P<party_id>\d+)/add_schedule', views.add_schedule),
+	url(r'^detail/p/(?P<party_id>\d+)/add_restaurant', views.add_restaurant),
 	url(r'^detail/r/(?P<restaurant_id>\d+)/$', views.restaurant_detail),
 )
 
