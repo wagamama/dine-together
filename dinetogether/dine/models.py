@@ -89,6 +89,9 @@ class Schedule(models.Model):
 	date = models.DateTimeField('date')
 	votes = models.IntegerField(default=0)
 
+	def __unicode__(self):
+		return date
+
 class Restaurant(models.Model):
 	party = models.ForeignKey(Party)
 	name = models.CharField(max_length=20)
@@ -101,6 +104,13 @@ class Restaurant(models.Model):
 	
 	def __unicode__(self):
 		return self.name
+
+class RestaurantRef(models.Model):
+	restaurant = models.ForeignKey(Restaurant)
+	url = models.URLField()
+
+	def __unicode__(self):
+		return url
 
 class RestaurantComment(models.Model):
 	restaurant = models.ForeignKey(Restaurant)

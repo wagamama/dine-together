@@ -1,8 +1,5 @@
 from django.conf.urls import patterns, include, url
 
-import autocomplete_light
-autocomplete_light.autodiscover()
-
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -19,5 +16,4 @@ urlpatterns = patterns('',
     url(r'^$', 'dine.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^dine/', include('dine.urls', namespace="dine")),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
 )

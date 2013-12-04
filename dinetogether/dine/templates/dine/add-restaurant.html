@@ -1,0 +1,15 @@
+{% extends "dine/base.html" %}
+{% block title %}dineTogether|add-restaurant{% endblock title %}
+{% block context %}
+<div class="container">
+    <form class="form-signin" method="post">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">Edit restaurant info</h2>
+        <input type="text" name="name" class="form-control" placeholder="Name" required>
+        <input type="text" name="address" class="form-control" placeholder="Address" required>
+        <textarea type="text" name="description" class="form-control" placeholder="Description" rows="3"></textarea>
+        <input type="text" name="url" class="form-control" placeholder="URL">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Done</button>
+    </form>
+</div> <!-- /container -->
+{% endblock context %}

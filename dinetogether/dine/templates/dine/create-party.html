@@ -2,7 +2,7 @@
 {% block title %}dineTogether|create-party{% endblock title %}
 {% block context %}
 <div class="container">
-    <form class="form-signin" method="post" action="/dine/create_party_view">
+    <form class="form-signin" method="post">
         {% csrf_token %}
         <h2 class="form-signin-heading">Edit party info</h2>
         <input type="text" name="name" class="form-control" placeholder="Name" required>

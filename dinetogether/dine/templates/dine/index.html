@@ -22,7 +22,7 @@
       	<!-- Example row of columns -->
       	<div class="row">
         		{% for party in parties %}
-      	    		<div class="col-md-4">
+      	    		<div class="col-md-3">
               			<h2>{{ party.name }}</h2>
               			{% if party.is_alive %}
               				<p><span class="label label-danger">{{ party.due_date.date }}</span></p>

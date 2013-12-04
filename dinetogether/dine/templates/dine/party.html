@@ -31,12 +31,14 @@
 	</div>
 
 	<div class="container">
-		<h3><span class="label label-info">Schedule</span></h3>
+		<h3><span class="label label-info">Schedule</span>
+			{% if party.is_alive %}
+			 <a class="btn btn-primary btn-sm" href="#" role="button">Vote</a>
+			{% endif %}
+		</h3>
 		<!-- Example row of columns -->
 		<div class="row">
 			{% for schedule in schedules %}
-				{% if user.is_authenticated %}
-				{% endif %}
 	    		<div class="col-md-2">
 	      			<p>{{ schedule.date.date }}</p>
 	      			<p id="weekday">{{ schedule.date.weekday }}</p>
@@ -48,39 +50,40 @@
 				        })
 	      			</script>
 	    		</div>
-	    {% endfor %}
+	    	{% endfor %}
 		</div>
-		<div class="container">
-			{% if owner and party.is_alive %}
-			<form class="navbar-form" method="post" action="add_schedule">
+		{% if owner and party.is_alive %}
+            <form class="navbar-form" method="post" action="add_schedule">
 				{% csrf_token %}
 				<div class="form-group">
 					<input type="text" id="datetimepicker" name="schedule_date" placeholder="Party date" class="form-control" data-format="yyyy-MM-dd">
 				</div>
-			 	<button type="submit" class="btn btn-success">Add</button>
-			 </form>
-			{% endif %}
-		</div>
+			 	<button type="submit" class="btn btn-success">Add schedule</button>
+			</form>
+		{% endif %}
 	</div>
+
+	<hr/>
 
 	<div class="container">
 		<h3><span class="label label-info">Restaurant</span>
-			{% if owner and party.is_alive %}
-			 <a class="btn btn-success" href="add_restaurant" role="button">Add</a>
+			{% if party.is_alive %}
+			 <a class="btn btn-primary btn-sm" href="#" role="button">Vote</a>
 			{% endif %}
 		</h3>
 		<!-- Example row of columns -->
 		<div class="row">
 			{% for restaurant in restaurants %}
-				{% if user.is_authenticated %}
-				{% endif %}
-	    		<div class="col-md-4">
-	      			<h2>{{ restaurant.name }}</h2>
+	    		<div class="col-md-3">
+	      			<h4><a href="{{ restaurant.url }}">{{ restaurant.name }}</a></h4>
 	      			<p>{{ restaurant.description }} </p>
-	      			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+	      			<p><a class="btn btn-default" href="/dine/detail/r/{{ restaurant.id }}/" role="button">View details &raquo;</a></p>
 	    		</div>
-	    {% endfor %}
+	    	{% endfor %}
 		</div>
+		{% if owner and party.is_alive %}
+            <p class="navbar-form"><a class="btn btn-success" href="add_restaurant" role="button">Add restaurant</a></p>
+		{% endif %}
 	</div>
 
 	{% endif %}

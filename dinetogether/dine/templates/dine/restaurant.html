@@ -1,0 +1,42 @@
+{% extends "dine/base.html" %}
+{% block title %}dineTogether|restaurant{% endblock title %}
+{% block context %}
+
+{% if user.is_authenticated %}
+	{% if restaurant %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1><a href="{{ restaurant.url }}">{{ restaurant.name }}</a></h1>
+			<p><span class="label label-info">What</span> {{ restaurant.description }}</p>
+			<p><span class="label label-info">Where</span> {{ restaurant.address }}</p>
+			<img style="border: thin black solid;" src="http://maps.googleapis.com/maps/api/staticmap?center={{ restaurant.address }}&amp;size=500x350&amp;maptype=roadmap&amp;markers=color:red%7C{{ restaurant.address }}&amp;sensor=false"/>
+			<br/>
+			<br/>
+			<p><a class="btn btn-primary" href="/dine/detail/p/{{ party.id }}/" role="button">Back to party</a></p>
+		</div>
+	</div>
+
+	<div class="container">
+		<h3><span class="label label-info">Links</span></h3>
+		{% for ref in refs %}
+			<div class="container">
+				<p><a href="{{ ref.url }}">{{ ref.url }}</a></p>
+      			<iframe src="{{ ref.url }}" width="800" height="500"></iframe>
+      			<hr/>
+      		</div>
+    	{% endfor %}
+		{% if owner and party.is_alive %}
+			<form class="navbar-form" method="post" action="add_ref">
+				{% csrf_token %}
+            	<div class="form-group">
+            		<input type="text" name="url" placeholder="Link URL" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Add link</button>
+            </form>
+        {% endif %}
+	</div>
+
+	{% endif %}
+{% endif %}
+
+{% endblock context %}

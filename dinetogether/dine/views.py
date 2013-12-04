@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout, get_user, get_user_model
-from dine.models import Party, Restaurant, MyUser, UserParty, PartyComment, Schedule, RestaurantComment
+from dine.models import Party, Restaurant, MyUser, UserParty, PartyComment, Schedule, RestaurantComment, RestaurantRef
 
 class RegisterForm(forms.Form):
 	email = forms.EmailField(max_length=30)
@@ -17,6 +17,12 @@ class CreatePartyForm(forms.Form):
 	name = forms.CharField(max_length=20)
 	description = forms.CharField(max_length=200, widget=forms.Textarea)
 	due_date = forms.DateTimeField(label='due date', input_formats=['%Y-%m-%d'])
+
+class AddRestaurantForm(forms.Form):
+	name = forms.CharField(max_length=20)
+	description = forms.CharField(max_length=200, widget=forms.Textarea)
+	url = forms.URLField()
+	address = forms.CharField(max_length=80)
 
 def home(request):
 	user = get_user(request)
@@ -110,8 +116,38 @@ def add_schedule(request, party_id):
 			schedule.save()
 	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
 
-def add_restaurant(request, party_id):
-	return HttpResponse("add_restaurant")
+def add_restaurant_view(request, party_id):
+	error_msg = False
+	user = get_user(request)
+	party = Party.objects.filter(id=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
+	if request.method == 'POST':
+		form = AddRestaurantForm(request.POST)
+		if form.is_valid():
+			name = request.POST.get("name")
+			address = request.POST.get("address")
+			description = request.POST.get("description")
+			url = request.POST.get("url")
+			restaurant = party.restaurant_set.create(name=name, description=description, address=address, url=url)
+			restaurant.save()
+			return HttpResponseRedirect('/dine/detail/p/%s/' % party.id)
+	return render_to_response('dine/add-restaurant.html', {'error_msg': error_msg}, context_instance=RequestContext(request))
+
+def add_restaurant_ref(request, restaurant_id):
+	user = get_user(request)
+	restaurant = Restaurant.objects.filter(id=restaurant_id)
+	if not restaurant:
+		return HttpResponseRedirect('/')
+	restaurant = restaurant[0]
+	party = restaurant.party
+	url = request.POST.get("url")
+	if url:
+		ref = RestaurantRef(restaurant=restaurant, url=url)
+		ref.save()
+
+	return HttpResponseRedirect('/dine/detail/r/%s/' % restaurant_id)
 
 def create_party_view(request):
 	error_msg = False
@@ -149,8 +185,18 @@ def party_detail(request, party_id):
 	elif not users.filter(id=user.id).exists():
 		return HttpResponseRedirect('/')
 	
-	return render_to_response('dine/party.html', {'owner': owner, 'party': party,'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
+	return render_to_response('dine/party.html', {'owner': owner, 'party': party, 'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
 
 def restaurant_detail(request, restaurant_id):
-	restaurant = Restaurant.objects.get(pk=restaurant_id)
-	return HttpResponse("Let's dine at " % restaurant.name)
+	user = get_user(request)
+	owner = False
+	restaurant = Restaurant.objects.filter(id=restaurant_id)
+	if not restaurant:
+		return HttpResponseRedirect('/')
+	restaurant = restaurant[0]
+	refs = restaurant.restaurantref_set.all()
+	party = restaurant.party
+	if party.user.id == user.id:
+		owner = True
+
+	return render_to_response('dine/restaurant.html', {'owner': owner, 'party': party, 'restaurant': restaurant, 'refs': refs}, context_instance=RequestContext(request))

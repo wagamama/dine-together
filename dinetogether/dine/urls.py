@@ -14,7 +14,9 @@ urlpatterns = patterns('',
 	url(r'^detail/p/(?P<party_id>\d+)/$', views.party_detail),
 	url(r'^detail/p/(?P<party_id>\d+)/add_user', views.add_user),
 	url(r'^detail/p/(?P<party_id>\d+)/add_schedule', views.add_schedule),
-	url(r'^detail/p/(?P<party_id>\d+)/add_restaurant', views.add_restaurant),
+	url(r'^detail/p/(?P<party_id>\d+)/add_restaurant', views.add_restaurant_view),
 	url(r'^detail/r/(?P<restaurant_id>\d+)/$', views.restaurant_detail),
+	url(r'^detail/r/(?P<restaurant_id>\d+)/add_ref', views.add_restaurant_ref),
+
 )
 
