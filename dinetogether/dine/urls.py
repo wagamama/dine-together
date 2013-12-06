@@ -17,6 +17,7 @@ urlpatterns = patterns('',
 	url(r'^detail/p/(?P<party_id>\d+)/add_restaurant', views.add_restaurant_view),
 	url(r'^detail/r/(?P<restaurant_id>\d+)/$', views.restaurant_detail),
 	url(r'^detail/r/(?P<restaurant_id>\d+)/add_ref', views.add_restaurant_ref),
-
+	url(r'^detail/p/(?P<party_id>\d+)/vote_schedule', views.vote_schedule),
+	url(r'^detail/p/(?P<party_id>\d+)/vote_restaurant', views.vote_restaurant),
 )
 

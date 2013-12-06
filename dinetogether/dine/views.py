@@ -87,6 +87,44 @@ def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
 
+def vote_schedule(request, party_id):
+	user = get_user(request)
+	party = Party.objects.filter(id=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
+	up = UserParty.objects.filter(user=user.id, party=party_id)
+	if not up:
+		return HttpResponseRedirect('/')
+	up = up[0]
+	up.schedule_voted = True
+	up.save()
+	for schedule in party.schedule_set.all():
+		vote = request.POST.get(str(schedule.id))
+		if vote:
+			schedule.votes += 1
+			schedule.save()
+	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
+
+def vote_restaurant(request, party_id):
+	user = get_user(request)
+	party = Party.objects.filter(id=party_id)
+	if not party:
+		return HttpResponseRedirect('/')
+	party = party[0]
+	up = UserParty.objects.filter(user=user.id, party=party_id)
+	if not up:
+		return HttpResponseRedirect('/')
+	up = up[0]
+	up.restaurant_voted = True
+	up.save()
+	for restaurant in party.restaurant_set.all():
+		vote = request.POST.get("vote_restaurant")
+		if vote == str(restaurant.id):
+			restaurant.votes += 1
+			restaurant.save()
+	return HttpResponseRedirect('/dine/detail/p/%s/' % party_id)
+
 def add_user(request, party_id):
 	user = get_user(request)
 	party = Party.objects.filter(id=party_id)
@@ -172,10 +210,14 @@ def create_party_view(request):
 def party_detail(request, party_id):
 	user = get_user(request)
 	owner = False
-	party = Party.objects.filter(pk=party_id)
+	party = Party.objects.filter(id=party_id)
 	if not party:
 		return HttpResponseRedirect('/')
 	party = party[0]
+	up = UserParty.objects.filter(user=user.id, party=party_id)
+	if not up:
+		return HttpResponseRedirect('/')
+	up = up[0]
 	users = MyUser.objects.filter(userparty__party=party_id)
 	schedules = party.schedule_set.all().order_by('date')
 	restaurants = party.restaurant_set.all()
@@ -185,7 +227,7 @@ def party_detail(request, party_id):
 	elif not users.filter(id=user.id).exists():
 		return HttpResponseRedirect('/')
 	
-	return render_to_response('dine/party.html', {'owner': owner, 'party': party, 'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
+	return render_to_response('dine/party.html', {'owner': owner, 'party': party, 'up': up, 'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
 
 def restaurant_detail(request, restaurant_id):
 	user = get_user(request)

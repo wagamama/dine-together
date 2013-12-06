@@ -31,27 +31,43 @@
 	</div>
 
 	<div class="container">
-		<h3><span class="label label-info">Schedule</span>
-			{% if party.is_alive %}
-			 <a class="btn btn-primary btn-sm" href="#" role="button">Vote</a>
-			{% endif %}
-		</h3>
+		<h3><span class="label label-info">Schedule</span></h3>
 		<!-- Example row of columns -->
-		<div class="row">
-			{% for schedule in schedules %}
-	    		<div class="col-md-2">
-	      			<p>{{ schedule.date.date }}</p>
-	      			<p id="weekday">{{ schedule.date.weekday }}</p>
-	      			<script type="text/javascript">
-	      				$(function() {
-				            $('#weekday').replaceWith(function () {
-				                return "<p>" + ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][$(this).text()] + "</p>"
-				            })
-				        })
-	      			</script>
-	    		</div>
-	    	{% endfor %}
-		</div>
+		{% if party.is_alive and not up.schedule_voted %}
+		<form method="post" action="vote_schedule">
+			{% csrf_token %}
+		{% endif %}
+			<div class="row">
+				{% for schedule in schedules %}
+		    		<div class="col-md-2">
+		      			<p>{{ schedule.date.date }}</p>
+		      			<p id="weekday">{{ schedule.date.weekday }}</p>
+		      			<script type="text/javascript">
+		      				$(function() {
+					            $('#weekday').replaceWith(function () {
+					                return "<p>" + ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][$(this).text()] + "</p>"
+					            })
+					        })
+		      			</script>
+		      			<div class="checkbox">
+		      				{% if party.is_alive and not up.schedule_voted %}
+		      				<label>		      					
+		      					<input type="checkbox" name="{{ schedule.id }}"> 
+		      				{% endif %}
+		      					 <span class="badge btn-warning">{{ schedule.votes }}</span>
+		      				{% if party.is_alive and not up.schedule_voted %}
+		      				</label>
+		      				{% endif %}
+		      			</div>
+		    		</div>
+		    	{% endfor %}
+			</div>
+			{% if party.is_alive and not up.schedule_voted %}
+			<div>
+				 <button type="submit" class="btn btn-primary">Vote</a>
+			</div>
+			{% endif %}
+		</form>
 		{% if owner and party.is_alive %}
             <form class="navbar-form" method="post" action="add_schedule">
 				{% csrf_token %}
@@ -66,21 +82,36 @@
 	<hr/>
 
 	<div class="container">
-		<h3><span class="label label-info">Restaurant</span>
-			{% if party.is_alive %}
-			 <a class="btn btn-primary btn-sm" href="#" role="button">Vote</a>
-			{% endif %}
-		</h3>
+		<h3><span class="label label-info">Restaurant</span></h3>
 		<!-- Example row of columns -->
-		<div class="row">
-			{% for restaurant in restaurants %}
-	    		<div class="col-md-3">
-	      			<h4><a href="{{ restaurant.url }}">{{ restaurant.name }}</a></h4>
-	      			<p>{{ restaurant.description }} </p>
-	      			<p><a class="btn btn-default" href="/dine/detail/r/{{ restaurant.id }}/" role="button">View details &raquo;</a></p>
-	    		</div>
-	    	{% endfor %}
-		</div>
+		{% if party.is_alive and not up.restaurant_voted %}
+		<form method="post" action="vote_restaurant">
+			{% csrf_token %}
+		{% endif %}
+			<div class="row">
+				{% for restaurant in restaurants %}
+		    		<div class="col-md-3">
+		      			<h4><a href="/dine/detail/r/{{ restaurant.id }}/">{{ restaurant.name }}</a></h4>
+		      			<p>{{ restaurant.description }} </p>
+		      			<div class="radio">
+		      				{% if party.is_alive and not up.restaurant_voted %}
+		      				<label>		      					
+		      					<input type="radio" name="vote_restaurant" value="{{ restaurant.id }}"> 
+		      				{% endif %}
+		      					 <span class="badge btn-warning">{{ restaurant.votes }}</span>
+		      				{% if party.is_alive and not up.restaurant_voted %}
+		      				</label>
+		      				{% endif %}
+		      			</div>
+		    		</div>
+		    	{% endfor %}
+			</div>
+			{% if party.is_alive and not up.restaurant_voted %}
+			<div>
+				 <button type="submit" class="btn btn-primary">Vote</a>
+			</div>
+			{% endif %}
+		</form>
 		{% if owner and party.is_alive %}
             <p class="navbar-form"><a class="btn btn-success" href="add_restaurant" role="button">Add restaurant</a></p>
 		{% endif %}

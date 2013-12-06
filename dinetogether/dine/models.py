@@ -89,9 +89,6 @@ class Schedule(models.Model):
 	date = models.DateTimeField('date')
 	votes = models.IntegerField(default=0)
 
-	def __unicode__(self):
-		return date
-
 class Restaurant(models.Model):
 	party = models.ForeignKey(Party)
 	name = models.CharField(max_length=20)
