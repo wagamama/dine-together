@@ -1,4 +1,5 @@
 # Create your views here.
+from datetime import datetime
 from django import forms
 from django.utils import timezone
 from django.shortcuts import render_to_response
@@ -16,7 +17,7 @@ class RegisterForm(forms.Form):
 class CreatePartyForm(forms.Form):
 	name = forms.CharField(max_length=20)
 	description = forms.CharField(max_length=200, widget=forms.Textarea)
-	due_date = forms.DateTimeField(label='due date', input_formats=['%Y-%m-%d'])
+	due_date = forms.DateTimeField(label='due date', input_formats=['%Y-%m-%d'], localize=True)
 
 class AddRestaurantForm(forms.Form):
 	name = forms.CharField(max_length=20)
@@ -146,7 +147,7 @@ def add_schedule(request, party_id):
 	if not party:
 		return HttpResponseRedirect('/')
 	party = party[0]
-	date = request.POST.get("schedule_date")
+	date = datetime.strptime(request.POST.get("schedule_date"), "%Y-%m-%d")
 	if date:
 		schedule = Schedule.objects.filter(party=party_id, date=date)
 		if not schedule:
@@ -195,7 +196,7 @@ def create_party_view(request):
 		if form.is_valid():
 			name = request.POST.get("name")
 			description = request.POST.get("description")
-			due_date = request.POST.get("due_date")
+			due_date = datetime.strptime(request.POST.get("due_date"), "%Y-%m-%d")
 			party = user.party_set.create(name=name, description=description, create_date=timezone.now(), due_date=due_date)
 			party.save()
 			up = UserParty(user=user, party=party)
@@ -209,6 +210,7 @@ def create_party_view(request):
 
 def party_detail(request, party_id):
 	user = get_user(request)
+	winner = {'schedule': [], 'restaurant': []}
 	owner = False
 	party = Party.objects.filter(id=party_id)
 	if not party:
@@ -221,13 +223,17 @@ def party_detail(request, party_id):
 	users = MyUser.objects.filter(userparty__party=party_id)
 	schedules = party.schedule_set.all().order_by('date')
 	restaurants = party.restaurant_set.all()
-
+	if not party.is_alive():
+		if schedules.count():
+			winner['schedule'] = sorted(list(schedules), key=lambda schedule: schedule.votes, reverse=True)[0]
+		if restaurants.count():
+			winner['restaurant'] = sorted(list(restaurants), key=lambda restaurant: restaurant.votes, reverse=True)[0]
 	if party.user.id == user.id:
 		owner = True
 	elif not users.filter(id=user.id).exists():
 		return HttpResponseRedirect('/')
 	
-	return render_to_response('dine/party.html', {'owner': owner, 'party': party, 'up': up, 'users': users, 'schedules':schedules, 'restaurants':restaurants}, context_instance=RequestContext(request))
+	return render_to_response('dine/party.html', {'owner': owner, 'party': party, 'up': up, 'users': users, 'schedules': schedules, 'restaurants': restaurants, 'winner': winner}, context_instance=RequestContext(request))
 
 def restaurant_detail(request, restaurant_id):
 	user = get_user(request)
