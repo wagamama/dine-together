@@ -106,9 +106,6 @@ class RestaurantRef(models.Model):
 	restaurant = models.ForeignKey(Restaurant)
 	url = models.URLField()
 
-	def __unicode__(self):
-		return url
-
 class RestaurantComment(models.Model):
 	restaurant = models.ForeignKey(Restaurant)
 	user = models.CharField(max_length=200)
