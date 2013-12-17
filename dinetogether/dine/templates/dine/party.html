@@ -49,14 +49,7 @@
 				{% for schedule in schedules %}
 		    		<div class="col-md-2">
 		      			<p>{{ schedule.date|date }}</p>
-		      			<p id="weekday">{{ schedule.date.weekday }}</p>
-		      			<script type="text/javascript">
-		      				$(function() {
-					            $('#weekday').replaceWith(function () {
-					                return "<p>" + ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][$(this).text()] + "</p>"
-					            })
-					        })
-		      			</script>
+		      			<p id="weekday">{{ schedule.date|date:"l" }}</p>
 		      			<div class="checkbox">
 		      				{% if party.is_alive and not up.schedule_voted %}
 		      				<label>		      					
